@@ -1,0 +1,94 @@
+import java.io.PrintWriter;
+import java.util.*;
+
+public class Two_Share_DAGS {
+	static Scanner in = new Scanner(System.in);
+	static PrintWriter out = new PrintWriter(System.out);
+
+	public static void main(String[] args) {// paper 2015
+		HashSet<Integer> adj1[], adj2[];
+		int n1, n2, m1, m2;
+
+		n1 = in.nextInt();
+		m1 = in.nextInt();
+		adj1 = new HashSet[n1];
+		bulid(n1, adj1);
+		Take_Edges(m1, adj1);
+
+		n2 = in.nextInt();
+		m2 = in.nextInt();
+		adj2 = new HashSet[n2];
+		bulid(n2, adj2);
+		Take_Edges(m2, adj2);
+
+		if (Is_DAG(adj1) && Is_DAG(adj2)) {
+			HashSet<Integer> union[] = Union(adj1, adj2);
+			if (Is_DAG(union)) {
+				out.println("Two DAGS are shared(ie., its toposort orders transformable to earch other.)");
+				out.close();
+			} else {
+				out.println("Two DAGS arenot shared !");
+				out.close();
+			}
+
+		} else {
+			out.println("Inputs arenot valid. You have to enter two DAGS !!");
+			out.close();
+		}
+
+	}
+
+	static HashSet<Integer>[] Union(HashSet<Integer> adj1[], HashSet<Integer> adj2[]) {
+		HashSet<Integer> union[] = null;
+		int n1 = adj1.length;
+		int n2 = adj2.length;
+		int n = Math.max(n1, n2);
+		union = new HashSet[n];
+
+		for (int i = 0; i < n; i++) {
+			union[i] = new HashSet<>();
+			union[i].addAll(adj1[i]);
+			union[i].addAll(adj2[i]);
+		}
+		return union;
+	}
+
+	static void Take_Edges(int m, HashSet<Integer> adj[]) {
+		for (int i = 0; i < m; i++) {
+			int u = in.nextInt() - 1;
+			int v = in.nextInt() - 1;
+			adj[u].add(v);
+		}
+	}
+
+	static void bulid(int n, HashSet<Integer> adj[]) {
+		for (int i = 0; i < n; i++) {
+			adj[i] = new HashSet<>();
+		}
+	}
+
+	static boolean Is_DAG(HashSet<Integer> adj[]) {
+		int n = adj.length;
+		int indegree[] = new int[n];
+		Queue<Integer> q = new LinkedList();
+		for (int i = 0; i < n; i++) {
+			if (indegree[i] == 0) {
+				q.add(i);
+			}
+		}
+		int count_topo = 0;
+		while (!q.isEmpty()) {
+			if (q.size() > 1)
+				return false;
+			int poll = q.poll();
+			count_topo++;
+			for (Integer c : adj[poll]) {
+				if (--indegree[c] == 0) {
+					q.add(c);
+				}
+			}
+		}
+		return count_topo == n;
+	}
+
+}
