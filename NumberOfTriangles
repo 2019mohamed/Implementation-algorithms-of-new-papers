@@ -1,0 +1,74 @@
+import java.io.PrintWriter;
+import java.util.*;
+
+public class NumberOfTriangles {
+	static Scanner in = new Scanner(System.in);
+	static PrintWriter out = new PrintWriter(System.out);
+	static LinkedList<Integer> adj[];
+	static int n, m;
+
+	public static void main(String[] args) {
+		// Given Simple , free-loop and undirected graph, algorithm O(dm)
+
+		n = in.nextInt();
+		m = in.nextInt();
+		adj = new LinkedList[n];
+
+		for (int i = 0; i < m; i++) {
+			int u = in.nextInt() - 1;
+			int v = in.nextInt() - 1;
+			adj[u].add(v);
+			adj[v].add(u);
+		}
+
+		out.println(Counting_triangles());
+		out.close();
+
+	}
+
+	static int[] Counting_triangles() {
+		int m_7[] = new int[n];
+
+		for (int v = 0; v < n; v++) {
+			for (Integer u : adj[v]) {
+				if (v < u) {
+					int Merged = Merge(v, u);
+					m_7[u] += Merged;
+					m_7[v] += Merged;
+				}
+			}
+		}
+
+		for (int i = 0; i < n; i++) {
+			m_7[i] /= 2;
+		}
+
+		return m_7;
+	}
+
+	static int Merge(int v, int u) {
+		int count = 0;
+		int V[] = new int[n];
+
+		for (Integer w : adj[u]) {
+			if (w != v) {
+				V[w] = 1;
+			}
+		}
+
+		for (Integer w : adj[v]) {
+			if (w != u) {
+				if (V[w] == 1) {
+					V[w] = 3;
+					count++;
+
+				} else {
+					V[w] = 2;
+				}
+			}
+		}
+
+		return count;
+	}
+
+}
